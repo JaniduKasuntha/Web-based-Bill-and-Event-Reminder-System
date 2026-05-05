@@ -1,0 +1,134 @@
+
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/layout :: head(${eventId} != null ? 'Edit Event' : 'Create Event')">
+    <title>Event Form - University Reminder System</title>
+    <style>
+        .card {
+            background: linear-gradient(135deg, var(--card-bg) 0%, var(--primary-dark) 100%);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            border-radius: 12px;
+        }
+        .card-header {
+            background: var(--primary-dark);
+            color: var(--white);
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+            border-top-left-radius: 12px;
+            border-top-right-radius: 12px;
+        }
+        .form-control, .form-select {
+            background-color: var(--input-bg);
+            color: var(--white);
+            border: 1px solid var(--text-secondary);
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+        .form-control:focus, .form-select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 5px rgba(0, 128, 255, 0.5);
+        }
+        .form-label {
+            color: var(--white);
+            font-weight: 600;
+        }
+        .text-danger {
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+        }
+        .btn-sm {
+            padding: 0.4rem 1.5rem;
+            font-size: 0.85rem;
+        }
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+        }
+        .btn-outline-secondary:hover {
+            border-color: var(--white);
+            color: var(--white);
+        }
+    </style>
+</head>
+<body>
+<nav th:replace="fragments/layout :: navbar"></nav>
+
+<div th:replace="fragments/layout :: alerts"></div>
+
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="section-title" th:text="${eventId} != null ? 'Edit Event' : 'Create Event'">Event Form</h1>
+        <a th:href="@{/events}" class="btn btn-sm btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i> Back to Events
+        </a>
+    </div>
+
+    <div class="card animate mb-4">
+        <div class="card-header">
+            <h5 class="mb-0" th:text="${eventId} != null ? 'Edit Event' : 'Create Event'">Event Form</h5>
+        </div>
+        <form th:action="${eventId} != null ? @{/events/{id}/edit(id=${eventId})} : @{/events/create}"
+              th:object="${event}" method="post">
+
+            <input type="hidden" th:field="*{universityId}">
+
+            <div class="mb-3">
+                <label for="title" class="form-label">Event Title *</label>
+                <input type="text" class="form-control" id="title" th:field="*{title}" required>
+                <div class="text-danger" th:if="${#fields.hasErrors('title')}" th:errors="*{title}"></div>
+            </div>
+
+            <div class="mb-3">
+                <label for="description" class="form-label">Description</label>
+                <textarea class="form-control" id="description" th:field="*{description}" rows="3"></textarea>
+                <div class="text-danger" th:if="${#fields.hasErrors('description')}" th:errors="*{description}"></div>
+            </div>
+
+            <div class="mb-3">
+                <label for="venue" class="form-label">Venue</label>
+                <input type="text" class="form-control" id="venue" th:field="*{venue}">
+                <div class="text-danger" th:if="${#fields.hasErrors('venue')}" th:errors="*{venue}"></div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="startsAt" class="form-label">Start Time *</label>
+                    <input type="datetime-local" class="form-control" id="startsAt" th:field="*{startsAt}" required>
+                    <div class="text-danger" th:if="${#fields.hasErrors('startsAt')}" th:errors="*{startsAt}"></div>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label for="endsAt" class="form-label">End Time *</label>
+                    <input type="datetime-local" class="form-control" id="endsAt" th:field="*{endsAt}" required>
+                    <div class="text-danger" th:if="${#fields.hasErrors('endsAt')}" th:errors="*{endsAt}"></div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="visibility" class="form-label">Visibility</label>
+                    <select class="form-select" id="visibility" th:field="*{visibility}">
+                        <option value="PUBLIC">Public</option>
+                        <option value="PRIVATE">Private</option>
+                    </select>
+                </div>
+
+                <div class="col-md-6 mb-3" th:if="${eventId != null}">
+                    <label for="status" class="form-label">Status</label>
+                    <select class="form-select" id="status" th:field="*{status}">
+                        <option value="SCHEDULED">Scheduled</option>
+                        <option value="CANCELLED">Cancelled</option>
+                        <option value="COMPLETED">Completed</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="d-flex gap-3 justify-content-end">
+                <a th:href="@{/events}" class="btn btn-sm btn-outline-secondary me-md-3">Cancel</a>
+                <button type="submit" class="btn btn-sm btn-primary">Save</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<footer th:replace="fragments/layout :: footer"></footer>
+</body>
+</html>

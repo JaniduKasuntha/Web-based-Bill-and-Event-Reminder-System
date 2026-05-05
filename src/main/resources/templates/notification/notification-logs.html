@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/layout :: head('Delivery Logs')">
+    <title>Delivery Logs - University Reminder System</title>
+</head>
+<body>
+<nav th:replace="fragments/layout :: navbar"></nav>
+
+<div th:replace="fragments/layout :: alerts"></div>
+
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1>Delivery Logs</h1>
+            <h6 class="text-muted" th:text="${notification.title}">Notification Title</h6>
+        </div>
+        <a th:href="@{/notifications}" class="btn btn-secondary">
+            <i class="bi bi-arrow-left"></i> Back to Notifications
+        </a>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">Notification Details</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <h6 class="fw-bold">Title:</h6>
+                    <p th:text="${notification.title}">Notification Title</p>
+
+                    <h6 class="fw-bold">Type:</h6>
+                    <span class="badge bg-warning" th:if="${notification.type == 'BILL'}">Bill</span>
+                    <span class="badge bg-info" th:if="${notification.type == 'EVENT'}">Event</span>
+                    <span class="badge bg-secondary" th:if="${notification.type == 'SYSTEM'}">System</span>
+
+                    <h6 class="fw-bold mt-3">Created At:</h6>
+                    <p th:text="${#temporals.format(notification.createdAt, 'yyyy-MM-dd HH:mm')}">2025-09-19 15:00</p>
+                </div>
+
+                <div class="col-md-6">
+                    <h6 class="fw-bold">Body:</h6>
+                    <p th:text="${notification.body}">Notification body text...</p>
+
+                    <h6 class="fw-bold">Read Status:</h6>
+                    <p th:if="${notification.readAt != null}"
+                       th:text="'Read on ' + ${#temporals.format(notification.readAt, 'yyyy-MM-dd HH:mm')}">
+                        Read on 2025-09-19 15:30
+                    </p>
+                    <p th:if="${notification.readAt == null}" class="text-primary">Unread</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">Delivery Logs</h5>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Channel</th>
+                        <th>Status</th>
+                        <th>Sent At</th>
+                        <th>Error</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="log : ${logs}">
+                        <td th:text="${log.id}">1</td>
+                        <td>
+                                    <span class="badge bg-primary" th:if="${log.channel == 'EMAIL'}">
+                                        <i class="bi bi-envelope"></i> Email
+                                    </span>
+                            <span class="badge bg-success" th:if="${log.channel == 'IN_APP'}">
+                                        <i class="bi bi-app-indicator"></i> In-App
+                                    </span>
+                        </td>
+                        <td>
+                            <span class="badge bg-success" th:if="${log.status == 'SENT'}">Sent</span>
+                            <span class="badge bg-danger" th:if="${log.status == 'FAILED'}">Failed</span>
+                            <span class="badge bg-warning" th:if="${log.status == 'PENDING'}">Pending</span>
+                        </td>
+                        <td th:text="${log.sentAt != null ? #temporals.format(log.sentAt, 'yyyy-MM-dd HH:mm:ss') : '-'}">
+                            2025-09-19 15:01:23
+                        </td>
+                        <td th:text="${log.error != null ? log.error : '-'}">Error message</td>
+                    </tr>
+                    <tr th:if="${logs.empty}">
+                        <td colspan="5" class="text-center">No delivery logs found</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer th:replace="fragments/layout :: footer"></footer>
+</body>
+</html>

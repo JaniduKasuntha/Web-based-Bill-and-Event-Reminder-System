@@ -1,0 +1,123 @@
+
+
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/layout :: head(${noticeId} != null ? 'Edit Bill Notice' : 'Create Bill Notice')">
+    <title>Bill Notice Form - University Reminder System</title>
+    <style>
+        .card {
+            background: linear-gradient(135deg, var(--card-bg) 0%, var(--primary-dark) 100%);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            border-radius: 12px;
+        }
+        .card-header {
+            background: var(--primary-dark);
+            color: var(--white);
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+            border-top-left-radius: 12px;
+            border-top-right-radius: 12px;
+        }
+        .form-control, textarea {
+            background-color: var(--input-bg);
+            color: var(--white);
+            border: 1px solid var(--text-secondary);
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+        .form-control:focus, textarea:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 5px rgba(0, 128, 255, 0.5);
+        }
+        .form-label {
+            color: var(--white);
+            font-weight: 600;
+        }
+        .text-danger {
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+        }
+        .alert-info {
+            background-color: var(--info);
+            color: var(--white);
+            border-radius: 8px;
+            padding: 0.75rem 1rem;
+        }
+        .btn-sm {
+            padding: 0.4rem 1.5rem;
+            font-size: 0.85rem;
+        }
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+        }
+        .btn-secondary:hover {
+            background-color: var(--gray-dark);
+        }
+    </style>
+</head>
+<body>
+<nav th:replace="fragments/layout :: navbar"></nav>
+
+<div th:replace="fragments/layout :: alerts"></div>
+
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="section-title" th:text="${noticeId} != null ? 'Edit Bill Notice' : 'Create Bill Notice'">Bill Notice Form</h1>
+        <a th:href="@{/admin/bill-notices}" class="btn btn-sm btn-secondary">
+            <i class="bi bi-arrow-left"></i> Back to Bill Notices
+        </a>
+    </div>
+
+    <div class="card animate mb-4">
+        <div class="card-header">
+            <h5 class="mb-0" th:text="${noticeId} != null ? 'Edit Bill Notice' : 'Create Bill Notice'">Bill Notice Form</h5>
+        </div>
+        <div class="card-body">
+            <form th:action="${noticeId} != null ? @{/admin/bill-notices/{id}/edit(id=${noticeId})} : @{/admin/bill-notices/create}"
+                  th:object="${notice}" method="post">
+
+                <input type="hidden" th:field="*{universityId}">
+
+                <div class="mb-3">
+                    <label for="title" class="form-label">Title *</label>
+                    <input type="text" class="form-control" id="title" th:field="*{title}" required>
+                    <div class="text-danger" th:if="${#fields.hasErrors('title')}" th:errors="*{title}"></div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="message" class="form-label">Message *</label>
+                    <textarea class="form-control" id="message" th:field="*{message}" rows="5" required></textarea>
+                    <div class="text-danger" th:if="${#fields.hasErrors('message')}" th:errors="*{message}"></div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="validFrom" class="form-label">Valid From *</label>
+                        <input type="date" class="form-control" id="validFrom" th:field="*{validFrom}" required>
+                        <div class="text-danger" th:if="${#fields.hasErrors('validFrom')}" th:errors="*{validFrom}"></div>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label for="validTo" class="form-label">Valid To *</label>
+                        <input type="date" class="form-control" id="validTo" th:field="*{validTo}" required>
+                        <div class="text-danger" th:if="${#fields.hasErrors('validTo')}" th:errors="*{validTo}"></div>
+                    </div>
+                </div>
+
+                <div class="alert alert-info">
+                    <i class="bi bi-info-circle"></i>
+                    This notice will be visible to all students and parents in the university during the validity period.
+                    Email notifications will be sent when the notice is created.
+                </div>
+
+                <div class="d-flex gap-3 justify-content-end">
+                    <a th:href="@{/admin/bill-notices}" class="btn btn-sm btn-secondary me-md-3">Cancel</a>
+                    <button type="submit" class="btn btn-sm btn-primary">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<footer th:replace="fragments/layout :: footer"></footer>
+</body>
+</html>

@@ -1,0 +1,114 @@
+
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/layout :: head('University Users')">
+    <title>University Users - University Reminder System</title>
+</head>
+<body>
+<nav th:replace="fragments/layout :: navbar"></nav>
+
+<div th:replace="fragments/layout :: alerts"></div>
+
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="section-title">University Users</h1>
+            <h6 class="text-secondary" th:text="${university.name}">University Name</h6>
+        </div>
+        <a th:href="@{/admin/university/users/create}" class="btn btn-primary">
+            <i class="bi bi-plus-circle"></i> Add New User
+        </a>
+    </div>
+
+    <div class="card animate mb-4">
+        <div class="card-header">
+            <h5 class="mb-0">Filter Users</h5>
+        </div>
+        <div class="card-body">
+            <form th:action="@{/admin/university/users}" method="get" class="row g-3">
+                <div class="col-md-4">
+                    <label for="role" class="form-label">Role</label>
+                    <select class="form-select" id="role" name="role">
+                        <option value="">All Roles</option>
+                        <option value="EVENT_MANAGER" th:selected="${param.role != null && param.role[0] == 'EVENT_MANAGER'}">Event Managers</option>
+                        <option value="STUDENT" th:selected="${param.role != null && param.role[0] == 'STUDENT'}">Students</option>
+                        <option value="PARENT" th:selected="${param.role != null && param.role[0] == 'PARENT'}">Parents</option>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label for="status" class="form-label">Status</label>
+                    <select class="form-select" id="status" name="status">
+                        <option value="">All Statuses</option>
+                        <option value="ACTIVE" th:selected="${param.status != null && param.status[0] == 'ACTIVE'}">Active</option>
+                        <option value="INACTIVE" th:selected="${param.status != null && param.status[0] == 'INACTIVE'}">Inactive</option>
+                    </select>
+                </div>
+                <div class="col-md-4 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary w-100">Apply Filters</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="card animate">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-dark table-hover table-custom-striped">
+                    <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Role</th>
+                        <th>Status</th>
+                        <th>Created At</th>
+                        <th>Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="user : ${users}">
+                        <td th:text="${user.id}">1</td>
+                        <td th:text="${user.firstName + ' ' + user.lastName}">John Doe</td>
+                        <td th:text="${user.email}">john.doe@example.com</td>
+                        <td>
+                            <span class="badge badge-primary" th:if="${user.role == 'UNIVERSITY_ADMIN'}">University Admin</span>
+                            <span class="badge badge-success" th:if="${user.role == 'EVENT_MANAGER'}">Event Manager</span>
+                            <span class="badge badge-info" th:if="${user.role == 'STUDENT'}">Student</span>
+                            <span class="badge badge-warning" th:if="${user.role == 'PARENT'}">Parent</span>
+                        </td>
+                        <td>
+                            <span class="badge badge-success" th:if="${user.status == 'ACTIVE'}">Active</span>
+                            <span class="badge badge-warning" th:if="${user.status == 'INACTIVE'}">Inactive</span>
+                            <span class="badge badge-danger" th:if="${user.status == 'DELETED'}">Deleted</span>
+                        </td>
+                        <td th:text="${#temporals.format(user.createdAt, 'yyyy-MM-dd HH:mm')}">2025-09-19 15:00</td>
+                        <td>
+                            <div class="btn-group" role="group">
+                                <a th:href="@{/admin/university/users/{id}/edit(id=${user.id})}" class="btn btn-sm btn-warning">
+                                    <i class="bi bi-pencil"></i> Edit
+                                </a>
+                                <form th:action="@{/admin/university/users/{id}/delete(id=${user.id})}" method="post" style="display: inline;"
+                                      th:if="${user.status != 'DELETED'}">
+                                    <button type="submit" class="btn btn-sm btn-danger"
+                                            th:onclick="${user.role == 'EVENT_MANAGER'} ?
+                                                'return confirm(\'Are you sure you want to delete this Event Manager? This action cannot be undone. Note: If this user has created events, the deletion will fail.\')' :
+                                                'return confirm(\'Are you sure you want to delete this user? This cannot be undone.\')'">
+                                        <i class="bi bi-trash"></i> Delete
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr th:if="${users.empty}">
+                        <td colspan="7" class="text-center text-secondary">No users found</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer th:replace="fragments/layout :: footer"></footer>
+</body>
+</html>

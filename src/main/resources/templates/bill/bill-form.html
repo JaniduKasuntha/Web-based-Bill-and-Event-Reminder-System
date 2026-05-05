@@ -1,0 +1,129 @@
+
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/layout :: head(${billId} ? 'Edit Bill' : 'Create Bill')">
+  <title>Bill Form - University Reminder System</title>
+  <style>
+    .card {
+      background: linear-gradient(135deg, var(--card-bg) 0%, var(--primary-dark) 100%);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      border-radius: 12px;
+    }
+    .card-header {
+      background: var(--primary-dark);
+      color: var(--white);
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+      border-top-left-radius: 12px;
+      border-top-right-radius: 12px;
+    }
+    .form-control, .form-select, .input-group-text {
+      background-color: var(--input-bg);
+      color: var(--white);
+      border: 1px solid var(--text-secondary);
+      border-radius: 8px;
+      transition: all 0.3s ease;
+    }
+    .form-control:focus, .form-select:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 5px rgba(0, 128, 255, 0.5);
+    }
+    .form-label {
+      color: var(--white);
+      font-weight: 600;
+    }
+    .text-danger {
+      font-size: 0.875rem;
+      margin-top: 0.25rem;
+    }
+    .alert-info {
+      background-color: var(--info);
+      color: var(--white);
+      border-radius: 8px;
+      padding: 0.75rem 1rem;
+    }
+    .btn-sm {
+      padding: 0.4rem 1.5rem;
+      font-size: 0.85rem;
+    }
+    .btn-primary:hover {
+      background-color: var(--primary-dark);
+    }
+    .btn-secondary:hover {
+      background-color: var(--gray-dark);
+    }
+  </style>
+</head>
+<body>
+<nav th:replace="fragments/layout :: navbar"></nav>
+
+<div th:replace="fragments/layout :: alerts"></div>
+
+<div class="container py-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="section-title" th:text="${billId} ? 'Edit Bill' : 'Create Bill'">Bill Form</h1>
+    <a th:href="@{/bills?me=true}" class="btn btn-sm btn-secondary">
+      <i class="bi bi-arrow-left"></i> Back to Bills
+    </a>
+  </div>
+
+  <div class="card animate mb-4">
+    <div class="card-header">
+      <h5 class="mb-0" th:text="${billId} ? 'Edit Bill' : 'Create Bill'">Bill Form</h5>
+    </div>
+    <div class="card-body">
+      <form th:action="${billId} ? @{/bills/{id}/edit(id=${billId})} : @{/bills/create}"
+            th:object="${bill}" method="post">
+
+        <input type="hidden" th:field="*{universityId}">
+        <input type="hidden" th:field="*{studentId}">
+
+        <div class="mb-3">
+          <label for="amount" class="form-label">Amount *</label>
+          <div class="input-group">
+            <span class="input-group-text">$</span>
+            <input type="number" class="form-control" id="amount" th:field="*{amount}" step="0.01" min="0.01" required>
+          </div>
+          <div class="text-danger" th:if="${#fields.hasErrors('amount')}" th:errors="*{amount}"></div>
+        </div>
+
+        <div class="mb-3">
+          <label for="description" class="form-label">Description *</label>
+          <textarea class="form-control" id="description" th:field="*{description}" rows="3" required></textarea>
+          <div class="text-danger" th:if="${#fields.hasErrors('description')}" th:errors="*{description}"></div>
+        </div>
+
+        <div class="mb-3">
+          <label for="dueDate" class="form-label">Due Date *</label>
+          <input type="date" class="form-control" id="dueDate" th:field="*{dueDate}" required>
+          <div class="text-danger" th:if="${#fields.hasErrors('dueDate')}" th:errors="*{dueDate}"></div>
+        </div>
+
+        <div class="mb-3">
+          <label for="parentId" class="form-label">Link to Parent (Optional)</label>
+          <select class="form-select" id="parentId" th:field="*{parentId}">
+            <option value="">-- No Parent --</option>
+            <option th:if="${student.parent != null}" th:value="${student.parent.id}"
+                    th:text="${student.parent.firstName + ' ' + student.parent.lastName}">
+              Parent Name
+            </option>
+          </select>
+        </div>
+
+        <div class="alert alert-info" th:if="${billId}">
+          <i class="bi bi-info-circle"></i>
+          Bills can only be edited within 48 hours of creation. This bill will be editable until
+          <span th:text="${#temporals.format(editableUntil, 'yyyy-MM-dd HH:mm')}">2025-09-21 15:00</span>.
+        </div>
+
+        <div class="d-flex gap-3 justify-content-end">
+          <a th:href="@{/bills?me=true}" class="btn btn-sm btn-secondary me-md-3">Cancel</a>
+          <button type="submit" class="btn btn-sm btn-primary">Save</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<footer th:replace="fragments/layout :: footer"></footer>
+</body>
+</html>

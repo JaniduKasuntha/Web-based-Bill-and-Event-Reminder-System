@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/layout :: head('Bill Details')">
+    <title>Bill Details - University Reminder System</title>
+    <style>
+        .card {
+            background: linear-gradient(135deg, var(--card-bg) 0%, var(--primary-dark) 100%);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            border-radius: 12px;
+        }
+        .card-header {
+            background: var(--primary-dark);
+            color: var(--white);
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+            border-top-left-radius: 12px;
+            border-top-right-radius: 12px;
+        }
+        .custom-bold {
+            font-weight: 600;
+            color: var(--white);
+        }
+        .badge {
+            color: var(--white);
+            text-shadow: 0 1px 1px rgba(0, 0, 0, 0.3);
+        }
+        .btn-sm {
+            padding: 0.4rem 1.5rem;
+            font-size: 0.85rem;
+        }
+        .btn-secondary:hover {
+            background-color: var(--gray-dark);
+        }
+        .btn-warning:hover {
+            background-color: var(--warning-dark);
+        }
+        .btn-success:hover {
+            background-color: var(--success-dark);
+        }
+        .btn-danger:hover {
+            background-color: var(--danger-dark);
+        }
+    </style>
+</head>
+<body>
+<nav th:replace="fragments/layout :: navbar"></nav>
+
+<div th:replace="fragments/layout :: alerts"></div>
+
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="section-title">Bill Details</h1>
+        <!-- <div>
+            <a th:href="@{/bills?me=true}" class="btn btn-sm btn-secondary" sec:authorize="hasRole('STUDENT')">
+                <i class="bi bi-arrow-left"></i> Back to Bills
+            </a>
+            <a th:href="@{/admin/bills}" class="btn btn-sm btn-secondary" sec:authorize="hasRole('UNIVERSITY_ADMIN')">
+                <i class="bi bi-arrow-left"></i> Back to Bills
+            </a>
+            <a th:href="@{/parent/bills}" class="btn btn-sm btn-secondary" sec:authorize="hasRole('PARENT')">
+                <i class="bi bi-arrow-left"></i> Back to Bills
+            </a>
+        </div> -->
+    </div>
+
+    <div class="card animate mb-4">
+        <div class="card-header">
+            <h5 class="mb-0">Bill #<span th:text="${bill.id}">123</span></h5>
+        </div>
+        <div class="card-body">
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <h6 class="custom-bold" style="color: cyan">Student:</h6>
+                    <p th:text="${bill.student.firstName + ' ' + bill.student.lastName}">John Doe</p>
+
+                    <h6 class="custom-bold" style="color: cyan">University:</h6>
+                    <p th:text="${bill.university.name}">Example University</p>
+
+                    <h6 class="custom-bold" style="color: cyan">Parent:</h6>
+                    <p th:if="${bill.parent != null}" th:text="${bill.parent.firstName + ' ' + bill.parent.lastName}">Parent Name</p>
+                    <p th:unless="${bill.parent != null}">No parent linked</p>
+                </div>
+
+                <div class="col-md-6">
+                    <h6 class="custom-bold" style="color: cyan">Amount:</h6>
+                    <p class="h4" th:text="${'$' + bill.amount}">$100.00</p>
+
+                    <h6 class="custom-bold" style="color: cyan">Status:</h6>
+                    <span class="badge badge-warning" th:if="${bill.status == 'PENDING'}">Pending</span>
+                    <span class="badge badge-success" th:if="${bill.status == 'ACCEPTED'}">Accepted</span>
+                    <span class="badge badge-info" th:if="${bill.status == 'PAID'}">Paid</span>
+                    <span class="badge badge-danger" th:if="${bill.status == 'REJECTED'}">Rejected</span>
+
+                    <h6 class="custom-bold mt-3" style="color: cyan">Due Date:</h6>
+                    <p th:text="${#temporals.format(bill.dueDate, 'yyyy-MM-dd')}">2025-10-01</p>
+                </div>
+            </div>
+
+            <div class="mb-4">
+                <h6 class="custom-bold" style="color: cyan">Description:</h6>
+                <p th:text="${bill.description}">Bill description goes here...</p>
+            </div>
+
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <h6 class="custom-bold" style="color: cyan">Created At:</h6>
+                    <p th:text="${#temporals.format(bill.createdAt, 'yyyy-MM-dd HH:mm')}">2025-09-19 15:00</p>
+
+                    <h6 class="custom-bold" style="color: cyan">Created By:</h6>
+                    <p th:text="${bill.createdBy.firstName + ' ' + bill.createdBy.lastName}">Creator Name</p>
+                </div>
+
+                <div class="col-md-6">
+                    <h6 class="custom-bold" style="color: cyan">Last Updated:</h6>
+                    <p th:text="${#temporals.format(bill.updatedAt, 'yyyy-MM-dd HH:mm')}">2025-09-19 15:00</p>
+
+                    <h6 class="custom-bold" style="color: cyan">Editable Until:</h6>
+                    <p th:text="${#temporals.format(bill.editableUntil, 'yyyy-MM-dd HH:mm')}">2025-09-21 15:00</p>
+                </div>
+            </div>
+
+            <div class="d-flex gap-3 mt-4">
+                <a th:href="@{/bills/{id}/edit(id=${bill.id})}" class="btn btn-sm btn-warning"
+                   sec:authorize="hasRole('STUDENT')"
+                   th:if="${bill.student.email == #authentication.principal.username && bill.editableUntil.isAfter(#temporals.createNow())}">
+                    <i class="bi bi-pencil"></i> Edit Bill
+                </a>
+                <!-- <form th:action="@{/api/bills/{id}/accept(id=${bill.id})}" method="post" style="display: inline;"
+                      th:if="${bill.status == 'PENDING'}" sec:authorize="hasRole('UNIVERSITY_ADMIN')">
+                    <button type="submit" class="btn btn-sm btn-success">
+                        <i class="bi bi-check-circle"></i> Accept Bill
+                    </button>
+                </form> -->
+                <form th:action="@{/api/bills/{id}(id=${bill.id})}" method="post" style="display: inline;"
+                      sec:authorize="hasRole('STUDENT')" th:if="${bill.student.email == #authentication.principal.username}">
+                    <input type="hidden" name="_method" value="DELETE">
+                    <button type="submit" class="btn btn-sm btn-danger"
+                            onclick="return confirm('Are you sure you want to delete this bill?')">
+                        <i class="bi bi-trash"></i> Delete Bill
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer th:replace="fragments/layout :: footer"></footer>
+</body>
+</html>

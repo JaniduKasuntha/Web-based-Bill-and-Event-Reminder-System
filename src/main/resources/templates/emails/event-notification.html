@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Event Notification</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            background-color: #0d6efd;
+            color: #fff;
+            padding: 20px;
+            text-align: center;
+        }
+        .content {
+            padding: 20px;
+            background-color: #f8f9fa;
+        }
+        .footer {
+            text-align: center;
+            padding: 20px;
+            font-size: 12px;
+            color: #6c757d;
+        }
+        .btn {
+            display: inline-block;
+            background-color: #0d6efd;
+            color: #fff;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 4px;
+            margin-top: 20px;
+        }
+        .info {
+            background-color: #fff;
+            border-left: 4px solid #0d6efd;
+            padding: 15px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1 th:text="${actionType} + ': ' + ${eventTitle}">Event Notification</h1>
+    </div>
+
+    <div class="content">
+        <p>Hello <span th:text="${userName}">User</span>,</p>
+
+        <p th:if="${actionType == 'New event announced'}">
+            A new event has been announced at your university.
+        </p>
+        <p th:if="${actionType == 'Event updated'}">
+            An event you might be interested in has been updated.
+        </p>
+        <p th:if="${actionType == 'Event cancelled'}">
+            Unfortunately, an event you might have been interested in has been cancelled.
+        </p>
+
+        <div class="info">
+            <h3 th:text="${eventTitle}">Event Title</h3>
+            <p><strong>Description:</strong> <span th:text="${eventDescription}">Event Description</span></p>
+            <p><strong>Venue:</strong> <span th:text="${eventVenue}">Event Venue</span></p>
+            <p><strong>Starts:</strong> <span th:text="${#temporals.format(eventStartsAt, 'EEEE, MMMM d, yyyy - HH:mm')}">Start Date</span></p>
+            <p><strong>Ends:</strong> <span th:text="${#temporals.format(eventEndsAt, 'EEEE, MMMM d, yyyy - HH:mm')}">End Date</span></p>
+        </div>
+
+        <p th:if="${actionType != 'Event cancelled'}">
+            We hope to see you there!
+        </p>
+
+        <a href="#" class="btn">View Event Details</a>
+    </div>
+
+    <div class="footer">
+        <p>This is an automated email. Please do not reply to this message.</p>
+        <p>© 2025 University Reminder System. All rights reserved.</p>
+    </div>
+</div>
+</body>
+</html>

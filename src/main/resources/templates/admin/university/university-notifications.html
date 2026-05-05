@@ -1,0 +1,65 @@
+
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Notifications')}">
+    <title>Notifications - University Reminder System</title>
+</head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+<div th:replace="~{fragments/layout :: alerts}"></div>
+
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="section-title">Notifications</h1>
+            <h6 class="text-secondary" th:text="${university.name}">University Name</h6>
+        </div>
+    </div>
+
+    <div class="card animate">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-dark table-hover table-custom-striped">
+                    <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Type</th>
+                        <th>Message</th>
+                        <th>Created At</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="notification : ${notifications}">
+                        <td th:text="${notification.title}">Notification Title</td>
+                        <td th:text="${notification.type}">TYPE</td>
+                        <td th:text="${notification.body}">Notification body</td>
+                        <td th:text="${#temporals.format(notification.createdAt, 'yyyy-MM-dd HH:mm')}">2025-09-22 10:00</td>
+                        <td>
+                            <span class="badge badge-success" th:if="${notification.readAt != null}">Read</span>
+                            <span class="badge badge-warning" th:if="${notification.readAt == null}">Unread</span>
+                        </td>
+                        <td>
+                            <form th:action="@{/admin/university/notifications/{id}/delete(id=${notification.id})}" method="post" style="display: inline;">
+                                <button type="submit" class="btn btn-sm btn-danger"
+                                        onclick="return confirm('Delete this notification permanently?')">
+                                    <i class="bi bi-trash"></i> Delete
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    <tr th:if="${notifications.empty}">
+                        <td colspan="6" class="text-center text-secondary">No notifications available</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>

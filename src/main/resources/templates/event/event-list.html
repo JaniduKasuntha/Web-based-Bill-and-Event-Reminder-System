@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/layout :: head('Events')">
+    <title>Events - University Reminder System</title>
+    <style>
+        .card {
+            background: linear-gradient(135deg, var(--card-bg) 0%, var(--primary-dark) 100%);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            border-radius: 12px;
+        }
+        .card-header {
+            background: var(--primary-dark);
+            color: var(--white);
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+            border-top-left-radius: 12px;
+            border-top-right-radius: 12px;
+        }
+        .form-control, .form-select {
+            background-color: var(--input-bg);
+            color: var(--white);
+            border: 1px solid var(--text-secondary);
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+        .form-control:focus, .form-select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 5px rgba(0, 128, 255, 0.5);
+        }
+        .form-label {
+            color: var(--white);
+            font-weight: 600;
+        }
+        .table-dark {
+            color: var(--white);
+            background-color: var(--card-bg);
+            border-radius: 8px;
+        }
+        .table-custom-striped tbody tr:nth-child(odd) {
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+        .btn-sm {
+            padding: 0.4rem 1.5rem;
+            font-size: 0.85rem;
+        }
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+        }
+        .btn-warning:hover {
+            background-color: var(--warning-dark);
+        }
+        .btn-danger:hover {
+            background-color: var(--danger-dark);
+        }
+        .btn-outline-danger:hover {
+            border-color: var(--white);
+            color: var(--white);
+        }
+    </style>
+</head>
+<body>
+<nav th:replace="fragments/layout :: navbar"></nav>
+
+<div th:replace="fragments/layout :: alerts"></div>
+
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="section-title">Events</h1>
+        <div sec:authorize="hasAnyRole('UNIVERSITY_ADMIN', 'EVENT_MANAGER')">
+            <a th:href="@{/events/create}" class="btn btn-sm btn-primary">
+                <i class="bi bi-plus-circle"></i> Create New Event
+            </a>
+        </div>
+    </div>
+
+    <div class="card animate mb-4">
+        <div class="card-header">
+            <h5 class="mb-0">Filter Events</h5>
+        </div>
+        <div class="card-body">
+            <form th:action="@{/events}" method="get" class="row g-3">
+                <div class="col-md-3">
+                    <label for="status" class="form-label">Status</label>
+                    <select class="form-select" id="status" name="status">
+                        <option value="">All Statuses</option>
+                        <option value="SCHEDULED" th:selected="${param.status != null && param.status[0] == 'SCHEDULED'}">Scheduled</option>
+                        <option value="CANCELLED" th:selected="${param.status != null && param.status[0] == 'CANCELLED'}">Cancelled</option>
+                        <option value="COMPLETED" th:selected="${param.status != null && param.status[0] == 'COMPLETED'}">Completed</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label for="upcoming" class="form-label">Time Frame</label>
+                    <select class="form-select" id="upcoming" name="upcoming">
+                        <option value="">All Events</option>
+                        <option value="true" th:selected="${param.upcoming != null && param.upcoming[0] == 'true'}">Upcoming Events</option>
+                        <option value="past" th:selected="${param.upcoming != null && param.upcoming[0] == 'past'}">Past Events</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label for="venue" class="form-label">Venue</label>
+                    <input type="text" class="form-control" id="venue" name="venue" th:value="${param.venue != null ? param.venue[0] : ''}">
+                </div>
+                <div class="col-md-3 d-flex align-items-end">
+                    <button type="submit" class="btn btn-sm btn-primary w-100">Apply Filters</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card animate">
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-dark table-hover table-custom-striped">
+                            <thead>
+                            <tr>
+                                <th>Title</th>
+                                <th>Venue</th>
+                                <th>Starts At</th>
+                                <th>Ends At</th>
+                                <th>Status</th>
+                                <th>Created By</th>
+                                <th>Actions</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="event : ${events}">
+                                <td th:text="${event.title}">Event Title</td>
+                                <td th:text="${event.venue}">Venue</td>
+                                <td th:text="${#temporals.format(event.startsAt, 'yyyy-MM-dd HH:mm')}">2025-10-01 09:00</td>
+                                <td th:text="${#temporals.format(event.endsAt, 'yyyy-MM-dd HH:mm')}">2025-10-01 11:00</td>
+                                <td>
+                                    <span class="badge badge-success" th:if="${event.status == 'SCHEDULED'}">Scheduled</span>
+                                    <span class="badge badge-danger" th:if="${event.status == 'CANCELLED'}">Cancelled</span>
+                                    <span class="badge badge-info" th:if="${event.status == 'COMPLETED'}">Completed</span>
+                                </td>
+                                <td th:text="${event.createdBy.firstName + ' ' + event.createdBy.lastName}">John Doe</td>
+                                <td>
+                                    <div class="btn-group" role="group" style="gap: 0.5rem;">
+                                        <a th:href="@{/events/{id}(id=${event.id})}" class="btn btn-sm btn-primary">
+                                            <i class="bi bi-eye"></i> View
+                                        </a>
+                                        <a th:href="@{/events/{id}/edit(id=${event.id})}" class="btn btn-sm btn-warning"
+                                           sec:authorize="hasAnyRole('UNIVERSITY_ADMIN', 'EVENT_MANAGER')">
+                                            <i class="bi bi-pencil"></i> Edit
+                                        </a>
+                                        <form th:action="@{/events/{id}/cancel(id=${event.id})}" method="post" style="display: inline;"
+                                              th:if="${event.status == 'SCHEDULED'}" sec:authorize="hasAnyRole('UNIVERSITY_ADMIN', 'EVENT_MANAGER')">
+                                            <button type="submit" class="btn btn-sm btn-danger"
+                                                    onclick="return confirm('Are you sure you want to cancel this event?')">
+                                                <i class="bi bi-x-circle"></i> Cancel
+                                            </button>
+                                        </form>
+                                        <form th:action="@{/events/{id}/delete(id=${event.id})}" method="post" style="display: inline;">
+                                            <input type="hidden" name="returnTo" value="event-manager-dashboard">
+                                            <button type="submit" class="btn btn-sm btn-outline-danger"
+                                                    onclick="return confirm('Delete this event permanently?')">
+                                                Delete
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr th:if="${events.empty}">
+                                <td colspan="7" class="text-center text-secondary">No events found</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer th:replace="fragments/layout :: footer"></footer>
+</body>
+</html>

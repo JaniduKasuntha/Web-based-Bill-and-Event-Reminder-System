@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/layout :: head('Notifications')">
+  <title>Notifications - University Reminder System</title>
+</head>
+<body>
+<nav th:replace="fragments/layout :: navbar"></nav>
+
+<div th:replace="fragments/layout :: alerts"></div>
+
+<div class="container py-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>Notifications</h1>
+    <a th:href="@{/notifications/mark-all-read}" class="btn btn-primary">
+      <i class="bi bi-check-all"></i> Mark All as Read
+    </a>
+  </div>
+
+  <div class="card mb-4">
+    <div class="card-header bg-primary text-white">
+      <h5 class="mb-0">Filter Notifications</h5>
+    </div>
+    <div class="card-body">
+      <form th:action="@{/notifications}" method="get" class="row g-3">
+        <div class="col-md-4">
+          <label for="type" class="form-label">Type</label>
+          <select class="form-select" id="type" name="type">
+            <option value="">All Types</option>
+            <option value="BILL" th:selected="${param.type != null && param.type[0] == 'BILL'}">Bill</option>
+            <option value="EVENT" th:selected="${param.type != null && param.type[0] == 'EVENT'}">Event</option>
+            <option value="SYSTEM" th:selected="${param.type != null && param.type[0] == 'SYSTEM'}">System</option>
+          </select>
+        </div>
+        <div class="col-md-4">
+          <label for="read" class="form-label">Status</label>
+          <select class="form-select" id="read" name="read">
+            <option value="">All Statuses</option>
+            <option value="false" th:selected="${param.read != null && param.read[0] == 'false'}">Unread</option>
+            <option value="true" th:selected="${param.read != null && param.read[0] == 'true'}">Read</option>
+          </select>
+        </div>
+        <div class="col-md-4 d-flex align-items-end">
+          <button type="submit" class="btn btn-primary w-100">Apply Filters</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-body">
+      <div class="list-group">
+        <div th:each="notification : ${notifications}"
+             th:class="'list-group-item list-group-item-action ' + (${notification.readAt == null} ? 'bg-light' : '')">
+          <div class="d-flex w-100 justify-content-between">
+            <h5 class="mb-1" th:text="${notification.title}">Notification Title</h5>
+            <div>
+              <small class="text-muted me-2" th:text="${#temporals.format(notification.createdAt, 'yyyy-MM-dd HH:mm')}">
+                2025-09-19 15:00
+              </small>
+              <span class="badge bg-warning" th:if="${notification.type == 'BILL'}">Bill</span>
+              <span class="badge bg-info" th:if="${notification.type == 'EVENT'}">Event</span>
+              <span class="badge bg-secondary" th:if="${notification.type == 'SYSTEM'}">System</span>
+            </div>
+          </div>
+          <p class="mb-1" th:text="${notification.body}">Notification body text...</p>
+          <div class="d-flex justify-content-between align-items-center mt-2">
+            <small class="text-muted">
+                                <span th:if="${notification.readAt != null}"
+                                      th:text="'Read on ' + ${#temporals.format(notification.readAt, 'yyyy-MM-dd HH:mm')}">
+                                    Read on 2025-09-19 15:30
+                                </span>
+              <span th:if="${notification.readAt == null}" class="text-primary">Unread</span>
+            </small>
+            <div>
+              <a th:href="@{/notifications/{id}/logs(id=${notification.id})}" class="btn btn-sm btn-outline-secondary">
+                <i class="bi bi-envelope"></i> Delivery Logs
+              </a>
+              <form th:action="@{/api/notifications/{id}/read(id=${notification.id})}" method="post"
+                    th:if="${notification.readAt == null}" style="display: inline;">
+                <button type="submit" class="btn btn-sm btn-outline-primary">
+                  <i class="bi bi-check"></i> Mark as Read
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+
+        <div th:if="${notifications.empty}" class="list-group-item text-center py-4">
+          <p class="mb-0">No notifications found</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer th:replace="fragments/layout :: footer"></footer>
+</body>
+</html>

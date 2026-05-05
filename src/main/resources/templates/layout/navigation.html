@@ -1,0 +1,163 @@
+<div th:fragment="navigation" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+  <div class="position-sticky">
+    <div class="d-flex align-items-center p-3 my-3 text-white bg-primary rounded shadow">
+      <div class="me-2">
+        <i class="fas fa-calendar-check fa-2x"></i>
+      </div>
+      <div class="lh-1">
+        <h6 class="mb-0 text-white lh-1">University Reminder</h6>
+        <small th:text="${#authentication.principal.universityName ?: 'System Admin'}">System Admin</small>
+      </div>
+    </div>
+
+    <ul class="nav flex-column">
+      <!-- Company Admin Links -->
+      <li class="nav-item" sec:authorize="hasRole('COMPANY_ADMIN')">
+        <a class="nav-link" th:classappend="${activeTab == 'company-dashboard' ? 'active' : ''}"
+           th:href="@{/templates/admin/company/dashboard}">
+          <i class="fas fa-tachometer-alt me-2"></i> Dashboard
+        </a>
+      </li>
+      <li class="nav-item" sec:authorize="hasRole('COMPANY_ADMIN')">
+        <a class="nav-link" th:classappend="${activeTab == 'manage-universities' ? 'active' : ''}"
+           th:href="@{/templates/admin/company/universities}">
+          <i class="fas fa-university me-2"></i> Manage Universities
+        </a>
+      </li>
+      <li class="nav-item" sec:authorize="hasRole('COMPANY_ADMIN')">
+        <a class="nav-link" th:classappend="${activeTab == 'company-profile' ? 'active' : ''}"
+           th:href="@{/templates/admin/company/profile}">
+          <i class="fas fa-building me-2"></i> Company Profile
+        </a>
+      </li>
+
+      <!-- University Admin Links -->
+      <li class="nav-item" sec:authorize="hasRole('UNIVERSITY_ADMIN')">
+        <a class="nav-link" th:classappend="${activeTab == 'university-dashboard' ? 'active' : ''}"
+           th:href="@{/templates/admin/university/dashboard}">
+          <i class="fas fa-tachometer-alt me-2"></i> Dashboard
+        </a>
+      </li>
+      <li class="nav-item" sec:authorize="hasRole('UNIVERSITY_ADMIN')">
+        <a class="nav-link" th:classappend="${activeTab == 'university-profile' ? 'active' : ''}"
+           th:href="@{/admin/university/profile}">
+          <i class="fas fa-user-circle me-2"></i> My Profile
+        </a>
+      </li>
+      <li class="nav-item" sec:authorize="hasRole('UNIVERSITY_ADMIN')">
+        <a class="nav-link" th:classappend="${activeTab == 'university-notifications' ? 'active' : ''}"
+           th:href="@{/admin/university/notifications}">
+          <i class="fas fa-bell me-2"></i> Notifications
+        </a>
+      </li>
+      <li class="nav-item" sec:authorize="hasRole('UNIVERSITY_ADMIN')">
+        <a class="nav-link" th:classappend="${activeTab == 'manage-users' ? 'active' : ''}"
+           th:href="@{/templates/admin/university/users}">
+          <i class="fas fa-users me-2"></i> Manage Users
+        </a>
+      </li>
+      <li class="nav-item" sec:authorize="hasRole('UNIVERSITY_ADMIN')">
+        <a class="nav-link" th:classappend="${activeTab == 'university-profile' ? 'active' : ''}"
+           th:href="@{/templates/admin/university/profile}">
+          <i class="fas fa-university me-2"></i> University Profile
+        </a>
+      </li>
+      <li class="nav-item" sec:authorize="hasRole('UNIVERSITY_ADMIN')">
+        <a class="nav-link" th:classappend="${activeTab == 'manage-bills' ? 'active' : ''}"
+           th:href="@{/bills}">
+          <i class="fas fa-file-invoice-dollar me-2"></i> Manage Bills
+        </a>
+      </li>
+      <li class="nav-item" sec:authorize="hasRole('UNIVERSITY_ADMIN')">
+        <a class="nav-link" th:classappend="${activeTab == 'bill-notices' ? 'active' : ''}"
+           th:href="@{/bill-notices}">
+          <i class="fas fa-bullhorn me-2"></i> Bill Notices
+        </a>
+      </li>
+
+      <!-- Event Manager Links -->
+      <li class="nav-item" sec:authorize="hasRole('EVENT_MANAGER')">
+        <a class="nav-link" th:classappend="${activeTab == 'event-dashboard' ? 'active' : ''}"
+           th:href="@{/events/dashboard}">
+          <i class="fas fa-tachometer-alt me-2"></i> Dashboard
+        </a>
+      </li>
+      <li class="nav-item" sec:authorize="hasAnyRole('EVENT_MANAGER', 'UNIVERSITY_ADMIN')">
+        <a class="nav-link" th:classappend="${activeTab == 'manage-events' ? 'active' : ''}"
+           th:href="@{/events}">
+          <i class="fas fa-calendar-alt me-2"></i> Manage Events
+        </a>
+      </li>
+      <li class="nav-item" sec:authorize="hasRole('EVENT_MANAGER')">
+        <a class="nav-link" th:classappend="${activeTab == 'event-reviews' ? 'active' : ''}"
+           th:href="@{/events/reviews}">
+          <i class="fas fa-star me-2"></i> Event Reviews
+        </a>
+      </li>
+
+      <!-- Student Links -->
+      <li class="nav-item" sec:authorize="hasRole('STUDENT')">
+        <a class="nav-link" th:classappend="${activeTab == 'student-dashboard' ? 'active' : ''}"
+           th:href="@{/student/dashboard}">
+          <i class="fas fa-tachometer-alt me-2"></i> Dashboard
+        </a>
+      </li>
+      <li class="nav-item" sec:authorize="hasRole('STUDENT')">
+        <a class="nav-link" th:classappend="${activeTab == 'student-events' ? 'active' : ''}"
+           th:href="@{/events?upcoming=true}">
+          <i class="fas fa-calendar-alt me-2"></i> Events
+        </a>
+      </li>
+      <li class="nav-item" sec:authorize="hasRole('STUDENT')">
+        <a class="nav-link" th:classappend="${activeTab == 'student-bills' ? 'active' : ''}"
+           th:href="@{/bills?me=true}">
+          <i class="fas fa-file-invoice-dollar me-2"></i> My Bills
+        </a>
+      </li>
+      <li class="nav-item" sec:authorize="hasRole('STUDENT')">
+        <a class="nav-link" th:classappend="${activeTab == 'student-reviews' ? 'active' : ''}"
+           th:href="@{/student/reviews}">
+          <i class="fas fa-star me-2"></i> My Reviews
+        </a>
+      </li>
+
+      <!-- Parent Links -->
+      <li class="nav-item" sec:authorize="hasRole('PARENT')">
+        <a class="nav-link" th:classappend="${activeTab == 'parent-dashboard' ? 'active' : ''}"
+           th:href="@{/parent/dashboard}">
+          <i class="fas fa-tachometer-alt me-2"></i> Dashboard
+        </a>
+      </li>
+      <li class="nav-item" sec:authorize="hasRole('PARENT')">
+        <a class="nav-link" th:classappend="${activeTab == 'parent-events' ? 'active' : ''}"
+           th:href="@{/parent/events}">
+          <i class="fas fa-calendar-alt me-2"></i> Events
+        </a>
+      </li>
+      <li class="nav-item" sec:authorize="hasRole('PARENT')">
+        <a class="nav-link" th:classappend="${activeTab == 'parent-bills' ? 'active' : ''}"
+           th:href="@{/parent/bills}">
+          <i class="fas fa-file-invoice-dollar me-2"></i> Student Bills
+        </a>
+      </li>
+
+      <!-- Common Links -->
+      <li class="nav-item" sec:authorize="isAuthenticated()">
+        <a class="nav-link" th:classappend="${activeTab == 'notifications' ? 'active' : ''}"
+           th:href="@{/notifications}">
+          <i class="fas fa-bell me-2"></i> Notifications
+          <span class="badge bg-danger" th:if="${unreadCount > 0}" th:text="${unreadCount}">0</span>
+        </a>
+      </li>
+      <li class="nav-item" sec:authorize="isAuthenticated()">
+        <!-- Profile link removed as requested -->
+      </li>
+      <li class="nav-item" sec:authorize="isAuthenticated()">
+        <a class="nav-link" href="#" onclick="document.getElementById('logout-form').submit();">
+          <i class="fas fa-sign-out-alt me-2"></i> Logout
+        </a>
+        <form id="logout-form" th:action="@{/logout}" method="post" style="display: none;"></form>
+      </li>
+    </ul>
+  </div>
+</div>

@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/layout :: head('My Students')">
+    <title>My Students - University Reminder System</title>
+    <style>
+        .card {
+            background: linear-gradient(135deg, var(--card-bg) 0%, var(--primary-dark) 100%);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            border-radius: 12px;
+        }
+        .card-header {
+            background: var(--primary-dark);
+            color: var(--white);
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+            border-top-left-radius: 12px;
+            border-top-right-radius: 12px;
+        }
+        .table-dark {
+            color: var(--white);
+            background-color: var(--card-bg);
+            border-radius: 8px;
+        }
+        .table-custom-striped tbody tr:nth-child(odd) {
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+        .btn-sm {
+            padding: 0.4rem 1.5rem;
+            font-size: 0.85rem;
+        }
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+        }
+        .btn-warning:hover {
+            background-color: var(--warning-dark);
+        }
+    </style>
+</head>
+<body>
+<nav th:replace="fragments/layout :: navbar"></nav>
+
+<div th:replace="fragments/layout :: alerts"></div>
+
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="section-title">My Students</h1>
+            <p class="text-secondary mb-0">Students linked to your parent account.</p>
+        </div>
+    </div>
+
+    <div class="card animate mb-4">
+        <div class="card-header">
+            <h5 class="mb-0">My Students</h5>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-dark table-hover table-custom-striped">
+                    <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>University</th>
+                        <th>Pending Bills</th>
+                        <th>Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="student : ${students}">
+                        <td th:text="${student.firstName + ' ' + student.lastName}">Student Name</td>
+                        <td th:text="${student.email}">student@example.com</td>
+                        <td th:text="${student.university.name}">University</td>
+                        <td th:text="${pendingCounts.containsKey(student.id) ? pendingCounts.get(student.id) : 0}">0</td>
+                        <td>
+                            <div class="btn-group" role="group" style="gap: 0.5rem;">
+                                <a th:href="@{/parent/students/{id}(id=${student.id})}" class="btn btn-sm btn-primary">
+                                    <i class="bi bi-eye"></i> View Details
+                                </a>
+                                <a th:href="@{/bills?studentId={id}(id=${student.id})}" class="btn btn-sm btn-warning">
+                                    <i class="bi bi-file-earmark"></i> View Bills
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr th:if="${students.empty}">
+                        <td colspan="5" class="text-center py-4 text-secondary">
+                            <p class="mb-0">No students linked to your account.</p>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer th:replace="fragments/layout :: footer"></footer>
+</body>
+</html>

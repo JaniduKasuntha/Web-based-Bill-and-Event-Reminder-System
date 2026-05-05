@@ -1,0 +1,629 @@
+
+
+
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en" data-bs-theme="dark">
+<head>
+    <title>Home - University Reminder System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <style>
+        /* Updated CSS with dark theme and enhanced styling */
+        :root {
+            --primary: #2C3E50;
+            --primary-dark: #1a2530;
+            --primary-light: #34495e;
+            --secondary: #1ABC9C;
+            --secondary-light: #3498DB;
+            --accent: #E67E22;
+            --accent-alt: #2ECC71;
+            --error: #E74C3C;
+            --warning: #F1C40F;
+            --background: #121212;
+            --background-alt: #1e1e1e;
+            --card-bg: #1e2a38;
+            --text-primary: #e4e6eb;
+            --text-secondary: #b0b3b8;
+            --white: #FFFFFF;
+            --dark: #0d1117;
+        }
+
+        body {
+            background-color: var(--background);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+        }
+
+        .navbar {
+            background-color: var(--primary-dark) !important;
+            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.4);
+            padding: 0.8rem 1rem;
+        }
+
+        .navbar-brand, .nav-link {
+            color: var(--white) !important;
+            font-weight: 500;
+        }
+
+        .navbar-nav .nav-link:hover {
+            color: var(--secondary) !important;
+        }
+
+        .navbar-toggler {
+            border: none;
+            color: var(--white);
+        }
+
+        .hero-section {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: var(--white);
+            padding: 6rem 0 5rem;
+            margin-bottom: 3rem;
+            border-radius: 0 0 30px 30px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 320'%3E%3Cpath fill='%231ABC9C' fill-opacity='0.1' d='M0,128L48,117.3C96,107,192,85,288,112C384,139,480,213,576,218.7C672,224,768,160,864,138.7C960,117,1056,139,1152,149.3C1248,160,1344,160,1392,160L1440,160L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z'%3E%3C/path%3E%3C/svg%3E") center;
+            opacity: 0.5;
+        }
+
+        .display-4 {
+            font-weight: 800;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(to right, var(--white), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            position: relative;
+        }
+
+        .lead {
+            font-size: 1.3rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+            font-weight: 300;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-alt) 100%);
+            border: none;
+            padding: 0.8rem 2.5rem;
+            font-weight: 600;
+            border-radius: 50px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(230, 126, 34, 0.3);
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .btn-primary::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 0%;
+            height: 100%;
+            background: linear-gradient(135deg, var(--accent-alt) 0%, var(--accent) 100%);
+            transition: all 0.5s ease;
+            z-index: -1;
+            border-radius: 50px;
+        }
+
+        .btn-primary:hover::before {
+            width: 100%;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(230, 126, 34, 0.4);
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border: none;
+            border-radius: 15px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            height: 100%;
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .card-body {
+            padding: 2.5rem 2rem;
+            text-align: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        .card i {
+            color: var(--secondary);
+            font-size: 2.8rem;
+            margin-bottom: 1.5rem;
+            display: inline-block;
+            padding: 1.2rem;
+            border-radius: 50%;
+            background: linear-gradient(135deg, rgba(26, 188, 156, 0.1) 0%, rgba(52, 152, 219, 0.1) 100%);
+            box-shadow: 0 5px 15px rgba(26, 188, 156, 0.2);
+        }
+
+        .card h3 {
+            color: var(--white);
+            margin-bottom: 1.2rem;
+            font-weight: 600;
+        }
+
+        .card p {
+            color: var(--text-secondary);
+            font-size: 1.05rem;
+        }
+
+        .section-title {
+            position: relative;
+            margin-bottom: 3rem;
+            font-weight: 700;
+            text-align: center;
+        }
+
+        .section-title::after {
+            content: '';
+            display: block;
+            width: 60px;
+            height: 4px;
+            background: linear-gradient(to right, var(--secondary), var(--accent));
+            margin: 0.8rem auto;
+            border-radius: 2px;
+        }
+
+        .footer {
+            background-color: var(--primary-dark);
+            color: var(--white);
+            margin-top: auto;
+            padding: 2.5rem 0;
+        }
+
+        /* Animation effects */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate {
+            opacity: 0;
+            animation: fadeInUp 0.8s ease forwards;
+        }
+
+        .delay-1 {
+            animation-delay: 0.2s;
+        }
+
+        .delay-2 {
+            animation-delay: 0.4s;
+        }
+
+        .delay-3 {
+            animation-delay: 0.6s;
+        }
+
+        /* Stats counter */
+        .stats-container {
+            background: linear-gradient(135deg, var(--primary-light) 0%, var(--primary-dark) 100%);
+            border-radius: 15px;
+            padding: 2.5rem;
+            margin: 4rem 0;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 1rem;
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--secondary);
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+        }
+
+        /* Testimonials */
+        .testimonial-card {
+            background: var(--card-bg);
+            border-radius: 15px;
+            padding: 2rem;
+            margin: 1rem 0;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .testimonial-text {
+            font-style: italic;
+            color: var(--text-primary);
+            margin-bottom: 1.5rem;
+            position: relative;
+            padding-left: 2rem;
+        }
+
+        .testimonial-text::before {
+            content: """;
+            font-size: 4rem;
+            color: var(--secondary);
+            position: absolute;
+            left: -1rem;
+            top: -1.5rem;
+            opacity: 0.3;
+            font-family: Georgia, serif;
+        }
+
+        .testimonial-author {
+            display: flex;
+            align-items: center;
+        }
+
+        .testimonial-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: var(--secondary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 1rem;
+            font-weight: bold;
+            color: white;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 992px) {
+            .hero-section {
+                padding: 5rem 0 4rem;
+            }
+
+            .display-4 {
+                font-size: 2.8rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .hero-section {
+                padding: 4rem 0 3rem;
+                border-radius: 0 0 20px 20px;
+            }
+
+            .display-4 {
+                font-size: 2.3rem;
+            }
+
+            .lead {
+                font-size: 1.1rem;
+            }
+
+            .card-body {
+                padding: 2rem 1.5rem;
+            }
+
+            .stats-container {
+                padding: 2rem 1rem;
+            }
+
+            .stat-number {
+                font-size: 2rem;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .hero-section {
+                padding: 3.5rem 0 2.5rem;
+            }
+
+            .display-4 {
+                font-size: 2rem;
+            }
+
+            .btn-primary {
+                padding: 0.7rem 2rem;
+            }
+        }
+
+        /* Dark mode switch */
+        .theme-switch-wrapper {
+            display: flex;
+            align-items: center;
+            margin-left: 1rem;
+        }
+
+        .theme-switch {
+            display: inline-block;
+            position: relative;
+            width: 60px;
+            height: 34px;
+        }
+
+        .theme-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: var(--primary-light);
+            transition: .4s;
+            border-radius: 34px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: var(--secondary);
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+    </style>
+</head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}" class="navbar navbar-expand-lg navbar-dark fixed-top">
+    <!-- Navbar will be replaced by Thymeleaf -->
+</nav>
+
+<div th:replace="~{fragments/layout :: alerts}"></div>
+
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-9 text-center">
+                <h1 class="display-4 animate">University Bill & Event Reminder</h1>
+                <p class="lead animate delay-1">Stay updated with your university bills and upcoming events with our advanced multi-tenant reminder system designed for modern educational institutions.</p>
+                <div class="d-flex justify-content-center gap-3 flex-wrap animate delay-2">
+                    <a th:href="@{/login}" class="btn btn-primary">
+                        <i class="bi bi-box-arrow-in-right me-2"></i>Login to Dashboard
+                    </a>
+                    <a href="#features" class="btn btn-outline-light">
+                        <i class="bi bi-arrow-down-circle me-2"></i>Explore Features
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section id="features" class="container py-5 mt-4">
+    <h2 class="section-title animate">Why Choose Our System</h2>
+
+    <div class="row">
+        <div class="col-md-4 mb-4 animate">
+            <div class="card h-100">
+                <div class="card-body">
+                    <i class="bi bi-cash-coin"></i>
+                    <h3>Bill Management</h3>
+                    <p>Keep track of your bills, receive reminders, and never miss a payment with our intuitive system designed specifically for university expenses.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4 animate delay-1">
+            <div class="card h-100">
+                <div class="card-body">
+                    <i class="bi bi-calendar-event"></i>
+                    <h3>Event Tracking</h3>
+                    <p>Stay informed about upcoming university events, deadlines, and important academic activities with our comprehensive calendar system.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4 animate delay-2">
+            <div class="card h-100">
+                <div class="card-body">
+                    <i class="bi bi-bell"></i>
+                    <h3>Smart Notifications</h3>
+                    <p>Receive timely notifications and reminders via email, SMS, and in-app alerts tailored to your preferences and schedule.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats Section -->
+    <div class="stats-container animate delay-2">
+        <div class="row text-center">
+            <div class="col-md-3 col-6 stat-item">
+                <div class="stat-number" data-count="5000">0</div>
+                <div class="stat-label">Active Users</div>
+            </div>
+            <div class="col-md-3 col-6 stat-item">
+                <div class="stat-number" data-count="98">0</div>
+                <div class="stat-label">Satisfaction Rate</div>
+            </div>
+            <div class="col-md-3 col-6 stat-item">
+                <div class="stat-number" data-count="12000">0</div>
+                <div class="stat-label">Reminders Sent</div>
+            </div>
+            <div class="col-md-3 col-6 stat-item">
+                <div class="stat-number" data-count="24">0</div>
+                <div class="stat-label">Support Hours</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Testimonials -->
+    <h2 class="section-title mt-5 animate">What Our Users Say</h2>
+    <div class="row animate delay-1">
+        <div class="col-md-6">
+            <div class="testimonial-card">
+                <p class="testimonial-text">This system has completely transformed how I manage my university expenses. The reminders have saved me from late fees multiple times!</p>
+                <div class="testimonial-author">
+                    <div class="testimonial-avatar">JD</div>
+                    <div>
+                        <h5 class="mb-0">John Doe</h5>
+                        <small class="text-muted">Computer Science Student</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="testimonial-card">
+                <p class="testimonial-text">As an administrator, the multi-tenant features make it so easy to manage different departments and send targeted notifications.</p>
+                <div class="testimonial-author">
+                    <div class="testimonial-avatar">SM</div>
+                    <div>
+                        <h5 class="mb-0">Sarah Miller</h5>
+                        <small class="text-muted">University Administrator</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Call to Action -->
+    <div class="row mt-5 pt-4">
+        <div class="col-12 text-center animate">
+            <h2 class="mb-4">Ready to stay organized?</h2>
+            <p class="mb-4 text-muted">Join thousands of students and staff who are already benefiting from our system</p>
+            <a th:href="@{/login}" class="btn btn-primary btn-lg px-5 me-3">
+                <i class="bi bi-box-arrow-in-right me-2"></i>Login
+            </a>
+            <!-- <a th:href="@{/register}" class="btn btn-outline-secondary btn-lg px-4">
+                <i class="bi bi-person-plus me-2"></i>Register
+            </a> -->
+            <p class="mt-4 text-muted">Need help? <a href="#" class="text-decoration-none">Contact our support team</a></p>
+        </div>
+    </div>
+</section>
+
+<footer th:replace="~{fragments/layout :: footer}" class="footer mt-5">
+    <!-- Footer will be replaced by Thymeleaf -->
+</footer>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- JavaScript for animations and interactions -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Animate elements when they come into view
+        const animatedElements = document.querySelectorAll('.animate');
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('animated');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.1 });
+
+        animatedElements.forEach(el => {
+            observer.observe(el);
+        });
+
+        // Stats counter animation
+        const statNumbers = document.querySelectorAll('.stat-number');
+        const statsSection = document.querySelector('.stats-container');
+
+        const statsObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    statNumbers.forEach(stat => {
+                        const target = parseInt(stat.getAttribute('data-count'));
+                        const duration = 2000; // 2 seconds
+                        const step = target / (duration / 16); // 16ms per frame
+                        let current = 0;
+
+                        const timer = setInterval(() => {
+                            current += step;
+                            if (current >= target) {
+                                stat.textContent = target + (stat.getAttribute('data-count') === '98' ? '%' : '+');
+                                clearInterval(timer);
+                            } else {
+                                stat.textContent = Math.floor(current) + (stat.getAttribute('data-count') === '98' ? '%' : '+');
+                            }
+                        }, 16);
+                    });
+                    statsObserver.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.5 });
+
+        if (statsSection) {
+            statsObserver.observe(statsSection);
+        }
+
+        // Your existing JS functionality
+        const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+
+        // Auto-hide alerts after 5 seconds
+        setTimeout(function() {
+            const alerts = document.querySelectorAll('.alert');
+            alerts.forEach(function(alert) {
+                const bsAlert = new bootstrap.Alert(alert);
+                bsAlert.close();
+            });
+        }, 5000);
+
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+
+                const targetId = this.getAttribute('href');
+                if (targetId === '#') return;
+
+                const targetElement = document.querySelector(targetId);
+                if (targetElement) {
+                    window.scrollTo({
+                        top: targetElement.offsetTop - 80,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/layout :: head('Companies')">
+    <title>Companies - University Reminder System</title>
+</head>
+<body>
+<nav th:replace="fragments/layout :: navbar"></nav>
+
+<div th:replace="fragments/layout :: alerts"></div>
+
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="section-title" th:text="'Companies'">Companies</h1>
+        <a th:href="@{/admin/companies/create}" class="btn btn-primary">
+            <i class="bi bi-plus"></i> Add New Company
+        </a>
+    </div>
+
+    <div class="card animate">
+        <div class="card-body">
+            <div th:if="${companies.isEmpty()}">
+                <p class="text-center text-secondary mb-0">No companies found</p>
+            </div>
+            <div th:unless="${companies.isEmpty()}">
+                <div class="table-responsive">
+                    <table class="table table-dark table-hover">
+                        <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Description</th>
+                            <th>Status</th>
+                            <th>Universities</th>
+                            <th>Created At</th>
+                            <th>Actions</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="company : ${companies}">
+                            <td th:text="${company.id}">1</td>
+                            <td th:text="${company.name}">Company Name</td>
+                            <td th:text="${company.description}">Description</td>
+                            <td>
+                                <span th:text="${company.status}" class="badge" th:classappend="${company.status == 'ACTIVE'} ? 'bg-success' : 'bg-secondary'">Active</span>
+                            </td>
+                            <td>
+                                <a th:href="@{/admin/companies/{id}/universities(id=${company.id})}" class="btn btn-sm btn-secondary">
+                                    View Universities
+                                </a>
+                            </td>
+                            <td th:text="${#temporals.format(company.createdAt, 'yyyy-MM-dd HH:mm')}">2025-09-19 15:00</td>
+                            <td>
+                                <div class="btn-group" role="group">
+                                    <a th:href="@{/admin/companies/edit/{id}(id=${company.id})}" class="btn btn-sm btn-primary">
+                                        Edit
+                                    </a>
+                                    <form th:if="${company.status == 'ACTIVE'}" th:action="@{/admin/companies/{id}/deactivate(id=${company.id})}" method="post" style="display: inline;">
+                                        <button type="submit" class="btn btn-sm btn-warning"
+                                                onclick="return confirm('Are you sure you want to deactivate this company?')">
+                                            Deactivate
+                                        </button>
+                                    </form>
+                                    <form th:unless="${company.status == 'ACTIVE'}" th:action="@{/admin/companies/{id}/activate(id=${company.id})}" method="post" style="display: inline;">
+                                        <button type="submit" class="btn btn-sm btn-success"
+                                                onclick="return confirm('Are you sure you want to activate this company?')">
+                                            Activate
+                                        </button>
+                                    </form>
+                                    <form th:action="@{/admin/companies/{id}/delete(id=${company.id})}" method="post" style="display: inline;">
+                                        <button type="submit" class="btn btn-sm btn-danger"
+                                                onclick="return confirm('Are you sure you want to delete this company? This action cannot be undone.')">
+                                            Delete
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer th:replace="fragments/layout :: footer"></footer>
+</body>
+</html>

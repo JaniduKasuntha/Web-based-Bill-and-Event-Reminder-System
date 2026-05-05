@@ -1,0 +1,62 @@
+
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head(${isEdit} ? 'Edit Email' : 'Create Email')}">
+    <title>Email Composer - University Reminder System</title>
+</head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+<div th:replace="~{fragments/layout :: alerts}"></div>
+
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="section-title" th:text="${isEdit} ? 'Edit Email' : 'Create Email'">Create Email</h1>
+            <h6 class="text-secondary" th:text="${university.name}">University</h6>
+        </div>
+        <a th:href="@{/admin/university/emails}" class="btn btn-secondary">
+            <i class="bi bi-arrow-left"></i> Back to Sent Emails
+        </a>
+    </div>
+
+    <div class="card animate">
+        <div class="card-body">
+            <form th:object="${email}" method="post"
+                  th:action="${isEdit} ? @{/admin/university/emails/{id}/edit(id=${emailId})} : @{/admin/university/emails/create}">
+
+                <div class="mb-3">
+                    <label for="recipientId" class="form-label">Recipient *</label>
+                    <select class="form-select" id="recipientId" th:field="*{recipientId}" required>
+                        <option value="" disabled th:selected="${email.recipientId == null}">-- Select Recipient --</option>
+                        <option th:each="recipient : ${recipients}" th:value="${recipient.id}"
+                                th:text="${recipient.fullName} + ' (' + ${recipient.email} + ')'">
+                        </option>
+                    </select>
+                    <div class="text-danger" th:if="${#fields.hasErrors('recipientId')}" th:errors="*{recipientId}"></div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="subject" class="form-label">Subject *</label>
+                    <input type="text" class="form-control" id="subject" th:field="*{subject}" required>
+                    <div class="text-danger" th:if="${#fields.hasErrors('subject')}" th:errors="*{subject}"></div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="body" class="form-label">Message *</label>
+                    <textarea class="form-control" id="body" th:field="*{body}" rows="6" required></textarea>
+                    <div class="text-danger" th:if="${#fields.hasErrors('body')}" th:errors="*{body}"></div>
+                </div>
+
+                <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                    <a th:href="@{/admin/university/emails}" class="btn btn-secondary me-md-2">Cancel</a>
+                    <button type="submit" class="btn btn-primary" th:text="${isEdit} ? 'Resend Email' : 'Send Email'">Send Email</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>

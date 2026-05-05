@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${subject}">University Message</title>
+    <style>
+        body { font-family: Arial, sans-serif; }
+    </style>
+</head>
+<body>
+<p>Hi <span th:text="${recipientName}">Recipient</span>,</p>
+<p th:text="${message}">Message content</p>
+<p>Best regards,<br><span th:text="${senderName}">Sender</span></p>
+</body>
+</html>

@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/layout :: head('Parent Dashboard')">
+    <title>Parent Dashboard - University Reminder System</title>
+</head>
+<body>
+<nav th:replace="fragments/layout :: navbar"></nav>
+
+<div th:replace="fragments/layout :: alerts"></div>
+
+<div class="container py-4">
+    <h1 class="section-title mb-4">Welcome, <span th:text="${parent.firstName}">Parent</span>!</h1>
+
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card animate mb-4">
+                <div class="card-body text-center">
+                    <h3 class="card-title">My Students</h3>
+                    <h2 class="display-4" th:text="${studentCount}">0</h2>
+                    <p class="text-secondary">Linked students</p>
+                    <a th:href="@{/parent/students}" class="btn btn-outline-primary">View All</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card animate mb-4">
+                <div class="card-body text-center">
+                    <h3 class="card-title">Pending Bills</h3>
+                    <h2 class="display-4" th:text="${pendingBillCount}">0</h2>
+                    <p class="text-secondary">Bills awaiting action</p>
+                    <a th:href="@{/bills?status=PENDING}" class="btn btn-outline-primary">View All</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card animate mb-4">
+                <div class="card-body text-center">
+                    <h3 class="card-title">Upcoming Events</h3>
+                    <h2 class="display-4" th:text="${upcomingEventsCount}">0</h2>
+                    <p class="text-secondary">Events in the next 30 days</p>
+                    <a th:href="@{/events?upcoming=true}" class="btn btn-outline-primary">View All</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <br><br>
+
+    <div class="row">
+        <div class="col-md-12 mb-4">
+            <div class="card animate">
+                <div class="card-header">
+                    <h5 class="mb-0">My Students</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-dark table-hover table-custom-striped">
+                            <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>University</th>
+                                <th>Pending Bills</th>
+                                <th>Actions</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="student : ${students}">
+                                <td th:text="${student.firstName + ' ' + student.lastName}">John Doe</td>
+                                <td th:text="${student.email}">john.doe@example.com</td>
+                                <td th:text="${student.university.name}">Example University</td>
+                                <td th:text="${studentPendingBills[student.id]}">2</td>
+                                <td>
+                                    <div class="btn-group" role="group" style="gap: 0.5rem;">
+                                        <a th:href="@{/parent/students/{id}(id=${student.id})}" class="btn btn-sm btn-primary">View Details</a>
+                                        <a th:href="@{/bills?studentId={id}(id=${student.id})}" class="btn btn-sm btn-warning">View Bills</a>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr th:if="${students.empty}">
+                                <td colspan="5" class="text-center text-secondary">No students linked to your account</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <br><br>
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card animate mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Recent Bills</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-dark table-hover table-custom-striped">
+                            <thead>
+                            <tr>
+                                <th>Student</th>
+                                <th>Amount</th>
+                                <th>Due Date</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="bill : ${recentBills}">
+                                <td th:text="${bill.student.firstName + ' ' + bill.student.lastName}">John Doe</td>
+                                <td th:text="${bill.amount}">$100.00</td>
+                                <td th:text="${#temporals.format(bill.dueDate, 'yyyy-MM-dd')}">2025-10-01</td>
+                                <td>
+                                    <span class="badge badge-warning" th:if="${bill.status == 'PENDING'}">Pending</span>
+                                    <span class="badge badge-success" th:if="${bill.status == 'ACCEPTED'}">Accepted</span>
+                                    <span class="badge badge-info" th:if="${bill.status == 'PAID'}">Paid</span>
+                                </td>
+                                <td>
+                                    <div class="btn-group" role="group" style="gap: 0.5rem;">
+                                        <a th:href="@{/bills/{id}(id=${bill.id})}" class="btn btn-sm btn-primary">View</a>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr th:if="${recentBills.empty}">
+                                <td colspan="5" class="text-center text-secondary">No bills found</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <br><br>
+
+        <div class="col-md-6">
+            <div class="card animate mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Active Bill Notices</h5>
+                </div>
+                <div class="card-body">
+                    <div class="list-group">
+                        <div th:each="notice : ${activeBillNotices}" class="list-group-item list-group-item-action">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h5 class="mb-1" th:text="${notice.title}">Bill Notice Title</h5>
+                                <small class="text-secondary" th:text="'Valid until: ' + ${#temporals.format(notice.validTo, 'yyyy-MM-dd')}">2025-10-01</small>
+                            </div>
+                            <p class="mb-1 text-secondary" th:text="${notice.message}">Bill notice details here...</p>
+                            <small class="text-secondary" th:text="'From: ' + ${notice.university.name}">University Name</small>
+                        </div>
+                        <div th:if="${activeBillNotices.empty}" class="list-group-item text-center text-secondary">
+                            No active bill notices
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <br><br>
+
+    <<div class="row">
+    <div class="col-md-12">
+        <div class="card animate">
+            <div class="card-header">
+                <h5 class="mb-0">Upcoming Events</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div th:each="event : ${upcomingEvents}" class="col-md-4 mb-4">
+                        <div class="card h-100 event-card">
+                            <div class="card-body">
+                                <h5 class="card-title" style="color: white" th:text="${event.title}">Event Title</h5>
+                                <h6 class="card-subtitle mb-2 text-secondary"
+                                    th:text="${event.venue + ' (' + event.university.name + ')'}">Venue (University)</h6>
+                                <p class="card-text" th:text="${event.description}">Event description...</p>
+                                <p class="card-text">
+                                    <small class="text-secondary">
+                                        <span th:text="${#temporals.format(event.startsAt, 'yyyy-MM-dd HH:mm')}">2025-10-01 09:00</span>
+                                        <br>
+                                        <span th:text="${#temporals.format(event.startsAt, 'HH:mm')} + ' - ' + ${#temporals.format(event.endsAt, 'HH:mm')}">
+                                            09:00 - 11:00
+                                        </span>
+                                    </small>
+                                </p>
+                            </div>
+                            <div class="card-footer">
+                                <a th:href="@{/events/{id}(id=${event.id})}" class="btn btn-sm btn-primary">View Details</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div th:if="${upcomingEvents.empty}" class="col-12 text-center text-secondary">
+                        <p>No upcoming events</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</div>
+
+<footer th:replace="fragments/layout :: footer"></footer>
+</body>
+</html>

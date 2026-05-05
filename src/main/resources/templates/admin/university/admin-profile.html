@@ -1,0 +1,60 @@
+
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('My Profile')}">
+    <title>My Profile - University Reminder System</title>
+</head>
+<body>
+<nav th:replace="fragments/layout :: navbar"></nav>
+
+<div th:replace="fragments/layout :: alerts"></div>
+
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="section-title">My Profile</h1>
+            <h6 class="text-secondary" th:text="${university.name}">University Name</h6>
+        </div>
+    </div>
+
+    <div class="card animate">
+        <div class="card-body">
+            <form th:action="@{/admin/university/profile}" th:object="${admin}" method="post">
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="firstName" class="form-label">First Name *</label>
+                        <input type="text" class="form-control" id="firstName" th:field="*{firstName}" required>
+                        <div class="text-danger" th:if="${#fields.hasErrors('firstName')}" th:errors="*{firstName}"></div>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label for="lastName" class="form-label">Last Name *</label>
+                        <input type="text" class="form-control" id="lastName" th:field="*{lastName}" required>
+                        <div class="text-danger" th:if="${#fields.hasErrors('lastName')}" th:errors="*{lastName}"></div>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="email" class="form-label">Email *</label>
+                    <input type="email" class="form-control" id="email" th:field="*{email}" required>
+                    <div class="text-danger" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="password" class="form-label">Password (leave blank to keep current)</label>
+                    <input type="password" class="form-control" id="password" th:field="*{password}">
+                    <div class="form-text text-secondary">Leave blank to keep the current password.</div>
+                    <div class="text-danger" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></div>
+                </div>
+
+                <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>

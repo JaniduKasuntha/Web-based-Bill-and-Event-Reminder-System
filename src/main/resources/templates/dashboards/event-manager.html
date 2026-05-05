@@ -1,0 +1,181 @@
+
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/layout :: head('Event Manager Dashboard')">
+    <title>Event Manager Dashboard - University Reminder System</title>
+</head>
+<body>
+<nav th:replace="fragments/layout :: navbar"></nav>
+
+<div th:replace="fragments/layout :: alerts"></div>
+
+<div class="container py-4">
+    <h1 class="section-title mb-4">Event Manager Dashboard</h1>
+
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card animate mb-4">
+                <div class="card-body text-center">
+                    <h3 class="card-title">Total Events</h3>
+                    <h2 class="display-4" th:text="${totalEvents}">0</h2>
+                    <p class="text-secondary">Events created</p>
+                    <a th:href="@{/events}" class="btn btn-outline-primary">View All</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card animate mb-4">
+                <div class="card-body text-center">
+                    <h3 class="card-title">Upcoming Events</h3>
+                    <h2 class="display-4" th:text="${upcomingEventsCount}">0</h2>
+                    <p class="text-secondary">Scheduled events</p>
+                    <a th:href="@{/events?upcoming=true}" class="btn btn-outline-primary">View All</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card animate mb-4">
+                <div class="card-body text-center">
+                    <h3 class="card-title">Event Reviews</h3>
+                    <h2 class="display-4" th:text="${totalReviews}">0</h2>
+                    <p class="text-secondary">Total reviews received</p>
+                    <a th:href="@{/reviews}" class="btn btn-outline-primary">View All</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <br><br>
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card animate mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Upcoming Events</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-dark table-hover table-custom-striped">
+                            <thead>
+                            <tr>
+                                <th>Title</th>
+                                <th>Venue</th>
+                                <th>Starts At</th>
+                                <th>Ends At</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="event : ${upcomingEvents}">
+                                <td th:text="${event.title}">Event Title</td>
+                                <td th:text="${event.venue}">Venue</td>
+                                <td th:text="${#temporals.format(event.startsAt, 'yyyy-MM-dd HH:mm')}">2025-10-01 09:00</td>
+                                <td th:text="${#temporals.format(event.endsAt, 'yyyy-MM-dd HH:mm')}">2025-10-01 11:00</td>
+                                <td>
+                                    <span class="badge badge-success" th:if="${event.status == 'SCHEDULED'}">Scheduled</span>
+                                    <span class="badge badge-danger" th:if="${event.status == 'CANCELLED'}">Cancelled</span>
+                                    <span class="badge badge-info" th:if="${event.status == 'COMPLETED'}">Completed</span>
+                                </td>
+                                <td>
+                                    <div class="btn-group" role="group" style="gap: 0.5rem;">
+                                        <a th:href="@{/events/{id}(id=${event.id})}" class="btn btn-sm btn-primary">View</a>
+                                        <a th:href="@{/events/{id}/edit(id=${event.id})}" class="btn btn-sm btn-warning">Edit</a>
+                                        <form th:action="@{/events/{id}/cancel(id=${event.id})}" method="post" style="display: inline;"
+                                              th:if="${event.status == 'SCHEDULED'}">
+                                            <button type="submit" class="btn btn-sm btn-danger"
+                                                    onclick="return confirm('Are you sure you want to cancel this event?')">
+                                                Cancel
+                                            </button>
+                                        </form>
+                                        <form th:action="@{/events/{id}/delete(id=${event.id})}" method="post" style="display: inline;">
+                                            <input type="hidden" name="returnTo" value="event-manager-dashboard">
+                                            <button type="submit" class="btn btn-sm btn-outline-danger"
+                                                    onclick="return confirm('Delete this event permanently?')">
+                                                Delete
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr th:if="${upcomingEvents.empty}">
+                                <td colspan="6" class="text-center text-secondary">No upcoming events</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <br><br>
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card animate">
+                <div class="card-header">
+                    <h5 class="mb-0">Recent Reviews</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-dark table-hover table-custom-striped">
+                            <thead>
+                            <tr>
+                                <th>Event</th>
+                                <th>Student</th>
+                                <th>Rating</th>
+                                <th>Comment</th>
+                                <th>Date</th>
+                                <th>Actions</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="review : ${recentReviews}">
+                                <td th:text="${review.event.title}">Event Title</td>
+                                <td th:text="${review.student.firstName + ' ' + review.student.lastName}">John Doe</td>
+                                <!--                                <td>-->
+                                <!--                                    <div class="stars">-->
+                                <!--                                        <i class="bi bi-star-fill" th:each="i : ${#numbers.sequence(1, review.rating)}" style="color: var(&#45;&#45;warning);"></i>-->
+                                <!--                                        <i class="bi bi-star" th:each="i : ${#numbers.sequence(review.rating + 1, 5)}" style="color: var(&#45;&#45;text-secondary);"></i>-->
+                                <!--                                    </div>-->
+                                <!--                                </td>-->
+                                <td th:text="${review.rating + ' / 5'}">0 / 5</td>
+
+                                <td th:text="${review.comment}">Comment text</td>
+                                <td th:text="${#temporals.format(review.createdAt, 'yyyy-MM-dd')}">2025-09-19</td>
+                                <td>
+                                    <div class="btn-group" role="group" style="gap: 0.5rem;">
+                                        <form th:action="@{/api/reviews/{id}(id=${review.id})}" method="post" style="display: inline;">
+                                            <input type="hidden" name="_method" value="DELETE">
+                                            <button type="submit" class="btn btn-sm btn-danger"
+                                                    onclick="return confirm('Are you sure you want to delete this review?')">
+                                                Delete
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr th:if="${recentReviews.empty}">
+                                <td colspan="6" class="text-center text-secondary">No reviews found</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="mt-4">
+        <a th:href="@{/events/create}" class="btn btn-primary">
+            <i class="bi bi-calendar-plus"></i> Create New Event
+        </a>
+    </div>
+</div>
+
+<footer th:replace="fragments/layout :: footer"></footer>
+</body>
+</html>

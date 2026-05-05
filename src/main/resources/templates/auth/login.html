@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/layout :: head('Login')">
+    <title>Login - University Reminder System</title>
+</head>
+<body>
+<nav th:replace="fragments/layout :: navbar"></nav>
+
+<div th:replace="fragments/layout :: alerts"></div>
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card animate">
+                <div class="card-body p-4">
+                    <h4 class="section-title text-center">Login to Your Account</h4>
+                    <div class="alert alert-danger" id="error-message" style="display: none;">
+                        Invalid email or password
+                    </div>
+                    <div class="alert alert-success" th:if="${param.logout}">
+                        You have been logged out
+                    </div>
+                    <div class="alert alert-danger" th:if="${param.error}">
+                        Invalid login attempt. Please try again.
+                    </div>
+
+                    <form id="loginForm">
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="email" name="email" required autofocus>
+                        </div>
+                        <div class="mb-3">
+                            <label for="password" class="form-label">Password</label>
+                            <input type="password" class="form-control" id="password" name="password" required>
+                        </div>
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary">Login</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer th:replace="fragments/layout :: footer"></footer>
+
+<script>
+    document.getElementById('loginForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+        const errorMessageDiv = document.getElementById('error-message');
+
+        try {
+            const response = await fetch('/api/auth/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ email, password })
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                // Redirect to the endpoint that will establish the server session
+                window.location.href = '/auth/jwt-login?token=' + data.accessToken;
+            } else {
+                errorMessageDiv.style.display = 'block';
+                errorMessageDiv.textContent = 'Invalid email or password.';
+            }
+        } catch (error) {
+            console.error('Login error:', error);
+            errorMessageDiv.style.display = 'block';
+            errorMessageDiv.textContent = 'An error occurred. Please try again later.';
+        }
+    });
+</script>
+</body>
+</html>
