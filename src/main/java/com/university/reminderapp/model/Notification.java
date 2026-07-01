@@ -29,5 +29,17 @@ public class Notification {
     protected void onCreate() {
         createdAt = LocalDateTime.now();
     }
+
+    public String getTitle() {
+        return type != null ? type : "System Notification";
+    }
+
+    public String getBody() {
+        return message;
+    }
+
+    public LocalDateTime getReadAt() {
+        return isRead ? createdAt : null;
+    }
 }
 

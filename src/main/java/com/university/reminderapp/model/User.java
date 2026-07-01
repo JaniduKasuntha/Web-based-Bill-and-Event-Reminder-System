@@ -26,6 +26,12 @@ public class User {
     @Column(unique = true, nullable = false)
     private String email;
 
+    private String firstName;
+    private String lastName;
+    private String status = "ACTIVE";
+
+    private java.time.LocalDateTime createdAt;
+
     @ElementCollection(fetch = FetchType.EAGER)
     private Set<String> roles;
 
@@ -37,10 +43,25 @@ public class User {
     @JoinColumn(name = "parent_id")
     private User parent;
 
-    public String getRole() {
+    @PrePersist
+    protected void onCreate() {
+        createdAt = java.time.LocalDateTime.now();
+    }
 
+    public String getFullName() {
+        if (firstName == null && lastName == null) {
+            return username != null ? username : email;
+        }
+        return (firstName != null ? firstName : "") + " " + (lastName != null ? lastName : "");
+    }
+
+    public String getRole() {
         if (roles != null && !roles.isEmpty()) {
-            return roles.iterator().next();
+            String r = roles.iterator().next();
+            if (r.startsWith("ROLE_")) {
+                return r.substring(5);
+            }
+            return r;
         }
         return null;
     }

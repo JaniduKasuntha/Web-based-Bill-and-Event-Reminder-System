@@ -31,5 +31,9 @@ public class Review {
     protected void onCreate() {
         createdAt = LocalDateTime.now();
     }
+
+    public User getStudent() {
+        return user;
+    }
 }
 

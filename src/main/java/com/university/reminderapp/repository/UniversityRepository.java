@@ -6,5 +6,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface UniversityRepository extends JpaRepository<University, Long> {
+    java.util.List<University> findAllByCompanyId(Long companyId);
 }
 
